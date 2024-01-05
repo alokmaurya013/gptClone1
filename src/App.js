@@ -1,42 +1,46 @@
-
 import './App.css';
-import {Route,Routes} from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Homepage from './pages/Homepage';
-import Login from './pages/Login';
-import { useMemo } from 'react';
-import Paragraph from './pages/Paragraph';
-import ChatBot from './pages/ChatBot';
-import { createTheme,CssBaseline, ThemeProvider} from '@mui/material';
-import {themeSettings} from './theme';
-import Summary from './pages/Summary';
-import { Toaster } from 'react-hot-toast';
-import Jsconverter from './pages/Jsconverter';
-import ScifiImage from './pages/ScifiImage';
-import Register from './pages/signUp';
+import Navbar from './component/Navbar';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import SignUp from './component/SignUp';
+import SignIn from './component/SignIn';
+import Home from './screens/Home';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Createpost from './screens/Createpost';
+import React, { useState } from 'react';
+import { LoginContext } from './context/LoginContext';
+import Modal from './component/Modal';
+import Profile from './screens/Profile';
+import MyFollowingPost from './screens/myFollowingPost';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import UserProfile from './component/UserProfile';
 
 function App() {
-  const theme=useMemo(()=>createTheme(themeSettings()),[])
+  const [modalOpen, setModalOpen] = useState(false);
+  const [userLogin, setUserLogin] = useState(false);
 
   return (
-    <>
-    <ThemeProvider theme={theme}>
-    <CssBaseline/>
-    <Navbar/>
-    <Toaster/>
-    <Routes>
-      <Route path="/" element={<Homepage/>}/>
-      <Route path="/register" element={<Register/>}/>
-      <Route path="/login" element={<Login/>}/>
-      <Route path='/summary' element={<Summary/>}/>
-      <Route path='/paragraph' element={<Paragraph/>} />
-      <Route path='/chatbot' element={<ChatBot/>} />
-      <Route path='/jsConverter' element={<Jsconverter/>}/>
-      <Route path='/scifiImage' element={<ScifiImage/>}/>
-      
-    </Routes>
-    </ThemeProvider>
-    </>
+    <BrowserRouter>
+      <div className="App">
+        <GoogleOAuthProvider clientId="713052737178-r2dinoavd3rkfk80fdm5kbn4o55b4tor.apps.googleusercontent.com">
+          <LoginContext.Provider value={{ setUserLogin, setModalOpen }}>
+            <Navbar login={userLogin} />
+            <Routes>
+              <Route path="/" element={<Home />}></Route>
+              <Route path="/signup" element={<SignUp />}></Route>
+              <Route path="/signin" element={<SignIn />} ></Route>
+              <Route exact path="/profile" element={<Profile />}></Route>
+              <Route path="/createPost" element={<Createpost />}></Route>
+              <Route path='/profile/:userid' element={<UserProfile />}></Route>
+              <Route path='/followingpost' element={<MyFollowingPost />}></Route>
+            </Routes>
+            <ToastContainer theme='dark' />
+            {modalOpen && <Modal setModalOpen={setModalOpen}></Modal>}
+          </LoginContext.Provider>
+        </GoogleOAuthProvider>
+      </div>
+    </BrowserRouter>
   );
 }
 export default App;
+
